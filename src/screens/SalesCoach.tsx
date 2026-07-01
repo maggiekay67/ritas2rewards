@@ -4,7 +4,7 @@ import {
   ChevronLeft, Brain, Clock, MessageSquare, AlertCircle,
   Lightbulb, HelpCircle, Target, ChevronRight, Zap
 } from 'lucide-react'
-import { restaurants } from '../data/mockData'
+import { useStore } from '../context/StoreContext'
 
 function ConfidenceRing({ value }: { value: number }) {
   const size = 96
@@ -42,6 +42,7 @@ function ConfidenceRing({ value }: { value: number }) {
 export default function SalesCoach() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { restaurants } = useStore()
 
   const restaurant = id ? restaurants.find(r => r.id === id) : restaurants[0]
   const r = restaurant || restaurants[0]

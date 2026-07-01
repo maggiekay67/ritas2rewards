@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, Check, Mic, MicOff, Star, Mail, Calendar, FileText,
   MessageSquare, TrendingUp, Clock, Sparkles
 } from 'lucide-react'
+import { useStore } from '../context/StoreContext'
 
 const outcomes = [
   { id: 'signed', label: 'Signed! 🎉', color: 'bg-emerald-500 text-white', selected: false },
@@ -26,6 +27,7 @@ const aiOutputs = [
 
 export default function AfterVisit() {
   const navigate = useNavigate()
+  const { addTimelineEntry } = useStore()
   const [step, setStep] = useState(1)
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null)
   const [rating, setRating] = useState(0)
@@ -46,6 +48,16 @@ export default function AfterVisit() {
   const handleProcess = () => {
     setProcessing(true)
     setTimeout(() => {
+      const now = new Date()
+      addTimelineEntry({
+        restaurantId: 'r1',
+        type: 'visit',
+        date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+        summary: `Visit logged — ${outcomes.find(o => o.id === selectedOutcome)?.label ?? 'Completed'}`,
+        outcome: 'Logged via Rita after-visit flow',
+        nextStep: 'Follow up as planned',
+      })
       setProcessing(false)
       setDone(true)
     }, 2000)

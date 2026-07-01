@@ -5,7 +5,7 @@ import {
   ChevronLeft, Phone, Mail, MessageSquare, Calendar, FileText,
   Mic, MapPin, FileCheck, Plus
 } from 'lucide-react'
-import { restaurants, timelineEntries } from '../data/mockData'
+import { useStore } from '../context/StoreContext'
 
 const typeConfig = {
   call: { icon: Phone, label: 'Call', color: 'bg-blue-100 text-blue-600', dot: 'bg-blue-400' },
@@ -24,10 +24,11 @@ const allTypes = ['All', 'Visit', 'Call', 'Email', 'Meeting', 'Note', 'Contract'
 export default function RelationshipTimeline() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { restaurants, timeline } = useStore()
   const r = restaurants.find(res => res.id === id)
   const [activeFilter, setActiveFilter] = useState('All')
 
-  const entries = timelineEntries.filter(e => {
+  const entries = timeline.filter(e => {
     if (e.restaurantId !== id) return false
     if (activeFilter === 'All') return true
     return e.type.toLowerCase() === activeFilter.toLowerCase()
@@ -59,7 +60,7 @@ export default function RelationshipTimeline() {
         {/* Stats */}
         <div className="flex gap-3 mt-4">
           {[
-            { label: 'Interactions', value: timelineEntries.filter(e => e.restaurantId === id).length.toString() },
+            { label: 'Interactions', value: timeline.filter(e => e.restaurantId === id).length.toString() },
             { label: 'Last Contact', value: r.lastContact },
             { label: 'Next Step', value: 'Today' },
           ].map(({ label, value }) => (

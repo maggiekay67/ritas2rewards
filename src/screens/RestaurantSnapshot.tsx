@@ -1,11 +1,12 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ChevronLeft, User, Brain, AlertTriangle, Target, MessageSquare, Navigation, Clock } from 'lucide-react'
-import { restaurants } from '../data/mockData'
+import { useStore } from '../context/StoreContext'
 
 export default function RestaurantSnapshot() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { restaurants } = useStore()
   const r = restaurants.find(res => res.id === id)
   if (!r) return null
 
