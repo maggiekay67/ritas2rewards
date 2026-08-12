@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, SlidersHorizontal, Star, MapPin, ChevronRight, Building2 } from 'lucide-react'
-import { restaurants } from '../data/mockData'
+import { Search, SlidersHorizontal, Star, MapPin, ChevronRight, Building2, Plus } from 'lucide-react'
+import { useStore } from '../context/StoreContext'
 
 const tabs = ['All', 'Customers', 'Hot Leads', 'Prospects', 'Dormant']
 
@@ -16,6 +16,7 @@ const statusStyles: Record<string, { dot: string; label: string; labelStyle: str
 
 export default function RestaurantList() {
   const navigate = useNavigate()
+  const { restaurants } = useStore()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('All')
 
@@ -33,7 +34,6 @@ export default function RestaurantList() {
 
   return (
     <div className="bg-rita-ivory min-h-screen">
-      {/* Header */}
       <div className="card-forest rounded-none pt-14 pb-5 px-5" style={{ borderRadius: '0 0 28px 28px' }}>
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -41,13 +41,19 @@ export default function RestaurantList() {
             <h1 className="text-white text-xl font-bold">Accounts</h1>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/accounts/add')}
+              className="flex items-center gap-1.5 bg-rita-gold px-3 py-2 rounded-xl btn-press"
+            >
+              <Plus size={14} className="text-rita-black" />
+              <span className="text-rita-black text-xs font-bold">Add</span>
+            </button>
             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
               <SlidersHorizontal size={15} className="text-white/70" />
             </div>
           </div>
         </div>
 
-        {/* Search */}
         <div className="relative">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
           <input
@@ -60,7 +66,6 @@ export default function RestaurantList() {
         </div>
       </div>
 
-      {/* Filter tabs */}
       <div className="flex gap-2 px-4 pt-4 overflow-x-auto scrollbar-hide pb-1">
         {tabs.map(tab => (
           <button
@@ -84,7 +89,7 @@ export default function RestaurantList() {
 
         <motion.div className="space-y-2" layout>
           {filtered.map(restaurant => {
-            const s = statusStyles[restaurant.status]
+            const s = statusStyles[restaurant.status] ?? statusStyles['prospect']
             return (
               <motion.button
                 key={restaurant.id}
@@ -94,13 +99,11 @@ export default function RestaurantList() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                {/* Avatar */}
                 <div className="w-11 h-11 rounded-2xl bg-rita-forest/10 flex items-center justify-center flex-shrink-0 relative">
                   <Building2 size={20} className="text-rita-forest/60" />
                   <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${s.dot}`} />
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-rita-black text-sm font-semibold truncate">{restaurant.name}</p>
@@ -124,7 +127,6 @@ export default function RestaurantList() {
                   </div>
                 </div>
 
-                {/* Right side */}
                 <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                   <div className="flex items-center gap-1">
                     <Star size={10} className="fill-rita-gold text-rita-gold" />
@@ -143,6 +145,19 @@ export default function RestaurantList() {
             )
           })}
         </motion.div>
+
+        {filtered.length === 0 && (
+          <div className="text-center py-16">
+            <Building2 size={32} className="text-rita-ivory-mid mx-auto mb-3" />
+            <p className="text-rita-muted text-sm">No accounts found</p>
+            <button
+              onClick={() => navigate('/accounts/add')}
+              className="mt-3 text-rita-forest text-sm font-semibold"
+            >
+              + Add your first account
+            </button>
+          </div>
+        )}
 
         <div className="h-4" />
       </div>

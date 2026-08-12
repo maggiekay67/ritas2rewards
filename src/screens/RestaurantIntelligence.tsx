@@ -4,11 +4,12 @@ import {
   ChevronLeft, Star, Phone, Globe, Instagram, MapPin, Users, DollarSign,
   ChevronRight, ExternalLink, Brain, Clock, TrendingUp, Package, Mic
 } from 'lucide-react'
-import { restaurants } from '../data/mockData'
+import { useStore } from '../context/StoreContext'
 
 export default function RestaurantIntelligence() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { restaurants } = useStore()
   const r = restaurants.find(res => res.id === id)
 
   if (!r) return null
@@ -112,15 +113,31 @@ export default function RestaurantIntelligence() {
 
         {/* Quick actions row */}
         <motion.div variants={fadeUp} className="flex gap-2">
+          {/* Tap-to-call */}
+          <a
+            href={r.phone ? `tel:${r.phone.replace(/\D/g, '')}` : undefined}
+            className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-2xl bg-white border border-rita-ivory-dark btn-press transition-premium"
+          >
+            <Phone size={17} className="text-rita-forest" />
+            <span className="text-[9px] font-semibold text-rita-slate">Call</span>
+          </a>
+          {/* Tap-to-navigate */}
+          <a
+            href={r.address ? `https://maps.apple.com/?q=${encodeURIComponent(r.address + ' ' + r.neighborhood)}` : undefined}
+            target="_blank" rel="noreferrer"
+            className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-2xl bg-white border border-rita-ivory-dark btn-press transition-premium"
+          >
+            <MapPin size={17} className="text-rita-forest" />
+            <span className="text-[9px] font-semibold text-rita-slate">Navigate</span>
+          </a>
           {[
-            { label: 'Call', icon: Phone, path: '' },
             { label: 'Timeline', icon: Clock, path: `/accounts/${id}/timeline` },
             { label: 'Coach', icon: TrendingUp, path: `/accounts/${id}/coach` },
             { label: 'Voice', icon: Mic, path: '/voice' },
           ].map(({ label, icon: Icon, path }) => (
             <button
               key={label}
-              onClick={() => path && navigate(path)}
+              onClick={() => navigate(path)}
               className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-2xl bg-white border border-rita-ivory-dark btn-press transition-premium"
             >
               <Icon size={17} className="text-rita-forest" />
@@ -141,8 +158,6 @@ export default function RestaurantIntelligence() {
               { label: 'Est. Revenue', value: r.revenue, icon: DollarSign },
               { label: 'Locations', value: r.locations.toString(), icon: MapPin },
               { label: 'Opened', value: new Date(r.openedDate).getFullYear().toString(), icon: Clock },
-              { label: 'Phone', value: r.phone, icon: Phone },
-              { label: 'Website', value: r.website, icon: Globe },
             ].map(({ label, value, icon: Icon }) => (
               <div key={label} className="flex items-center gap-3 px-4 py-3">
                 <Icon size={14} className="text-rita-muted flex-shrink-0" />
@@ -150,6 +165,17 @@ export default function RestaurantIntelligence() {
                 <span className="text-rita-black text-xs font-semibold flex-1 text-right">{value}</span>
               </div>
             ))}
+            {/* Tappable phone + website */}
+            <a href={`tel:${r.phone.replace(/\D/g,'')}`} className="flex items-center gap-3 px-4 py-3">
+              <Phone size={14} className="text-rita-muted flex-shrink-0" />
+              <span className="text-rita-muted text-xs w-20 flex-shrink-0">Phone</span>
+              <span className="text-rita-forest text-xs font-semibold flex-1 text-right underline">{r.phone}</span>
+            </a>
+            <a href={`https://${r.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 px-4 py-3">
+              <Globe size={14} className="text-rita-muted flex-shrink-0" />
+              <span className="text-rita-muted text-xs w-20 flex-shrink-0">Website</span>
+              <span className="text-rita-forest text-xs font-semibold flex-1 text-right underline">{r.website}</span>
+            </a>
           </div>
         </motion.div>
 
